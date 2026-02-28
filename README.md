@@ -1,134 +1,274 @@
-🚀 VoyageAI
+# 🚀 VoyageAI
 
-Multi-Agent Autonomous Travel Planning System
+### Multi-Agent Autonomous Travel Planning System
 
-🌍 Overview
+**Negotiation-Driven | Budget Optimized | RAG-Powered | Production-Ready**
 
-VoyageAI is an advanced AI-powered travel planner built using a Multi-Agent A2A Protocol Architecture.
+---
 
-It features:
+## 🌍 Overview
 
-🤖 Multi-agent collaboration
+VoyageAI is an advanced AI-powered travel planning system built using a **Multi-Agent Agent-to-Agent (A2A) Protocol Architecture**.
 
-🔁 Autonomous negotiation loop
+Unlike traditional LLM chatbots, VoyageAI decomposes travel planning into specialized intelligent agents that collaborate, negotiate, and optimize to produce a fully structured travel plan.
 
-🧮 Linear Programming budget optimization
+This project demonstrates:
 
-📚 RAG-based itinerary generation
+* Multi-agent orchestration
+* Structured A2A communication protocol
+* Autonomous negotiation loops
+* Linear programming budget optimization
+* Retrieval-Augmented Generation (RAG)
+* Production-level system design
 
-🧠 User memory personalization
+---
 
-⚡ Production-ready async FastAPI backend
+## 🧠 Architecture Overview
 
-🧠 System Architecture
-User
-  ↓
-Planner Agent
-  ↓
-------------------------------------------------
-| Flight Agent
-| Hotel Agent
-| Weather Agent
-| Budget Optimizer
-| Itinerary Agent (RAG)
-------------------------------------------------
-  ↓
+```
+User Request
+     ↓
+Planner Agent (Orchestrator)
+     ↓
+--------------------------------------------------
+| Flight Agent        → Cost & Timing
+| Hotel Agent         → Stay Optimization
+| Weather Agent       → Context Awareness
+| Budget Agent        → LP Optimization
+| Itinerary Agent     → RAG-Based Planning
+--------------------------------------------------
+     ↓
 Negotiation Engine
-  ↓
-Final Optimized Travel Plan
+     ↓
+Optimized Travel Plan
+```
 
-🏗️ Core Features
-1️⃣ Multi-Agent Architecture
+---
 
-Each domain (Flights, Hotels, Weather, Budget, Itinerary) is handled by an independent intelligent agent.
+## 🤖 Core Features
 
-2️⃣ A2A Protocol
+### 1️⃣ Multi-Agent System
 
-Agents communicate via structured JSON messages:
+Each domain is handled by a specialized AI agent:
 
-REQUEST
+* Flight Agent
+* Hotel Agent
+* Weather Agent
+* Budget Optimization Agent
+* Itinerary Generation Agent
 
-RESPONSE
+Agents communicate via structured JSON-based A2A protocol.
 
-NEGOTIATE
+---
 
-3️⃣ Budget Optimization
+### 2️⃣ Agent-to-Agent (A2A) Protocol
 
-Uses Linear Programming to:
+All agents exchange messages using structured schema:
 
-Minimize cost
+```json
+{
+  "message_id": "uuid",
+  "sender": "flight_agent",
+  "receiver": "budget_agent",
+  "intent": "REQUEST | RESPONSE | NEGOTIATE",
+  "payload": {},
+  "constraints": {},
+  "timestamp": ""
+}
+```
 
-Satisfy user constraints
+This ensures:
 
-Optimize allocation
+* Deterministic behavior
+* Debuggability
+* Production scalability
 
-4️⃣ RAG-Based Itinerary Generation
+---
 
-Embedding-based document retrieval
+### 3️⃣ Autonomous Negotiation Engine
 
-Context-aware generation
+If total trip cost exceeds budget:
 
-Grounded recommendations
+* Budget Agent requests cost reduction
+* Flight/Hotel Agents adjust options
+* Loop continues until feasible solution is found
+* Max retry limits ensure stability
 
-5️⃣ Autonomous Negotiation
+This simulates intelligent collaborative agents.
 
-Agents collaboratively adjust:
+---
 
-Flight pricing
+### 4️⃣ Linear Programming Budget Optimization
 
-Hotel selection
+The Budget Agent uses Linear Programming to:
 
-Schedule optimization
+* Minimize total trip cost
+* Satisfy budget constraints
+* Maintain quality thresholds (ratings, timing)
 
-🛠️ Tech Stack
+Powered by:
 
-Python
+* PuLP / SciPy Optimization
 
-FastAPI
+---
 
-PostgreSQL
+### 5️⃣ Retrieval-Augmented Generation (RAG)
 
-Redis
+The Itinerary Agent uses:
 
-FAISS / Pinecone
+* Embeddings
+* Vector database (FAISS / Pinecone)
+* Travel knowledge base
 
-Docker
+Flow:
+User Context → Embedding → Vector Search → Retrieved Docs → Grounded Itinerary Generation
 
-OpenAI / LLM API
+This ensures factual, location-specific plans.
 
-🚀 Getting Started
+---
+
+### 6️⃣ Personalization Memory
+
+User preferences are stored using embeddings:
+
+* Preferred airlines
+* Budget patterns
+* Travel styles
+* Past trips
+
+Future plans become adaptive and personalized.
+
+---
+
+## 🏗️ Tech Stack
+
+Backend:
+
+* Python
+* FastAPI
+* AsyncIO
+
+AI:
+
+* OpenAI / LLM APIs
+* LangGraph / Custom Orchestrator
+* RAG with FAISS
+
+Optimization:
+
+* PuLP (Linear Programming)
+
+Data:
+
+* PostgreSQL
+* Redis (Pub/Sub & Caching)
+
+Deployment:
+
+* Docker
+* AWS (EC2 / ECS)
+
+---
+
+## 📂 Project Structure
+
+```
+voyageai/
+│
+├── app/
+│   ├── agents/
+│   ├── core/
+│   ├── optimization/
+│   ├── rag/
+│   ├── memory/
+│   ├── protocol/
+│   └── services/
+│
+├── database/
+├── tests/
+├── docker/
+├── docker-compose.yml
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1️⃣ Clone Repository
+
+```bash
 git clone https://github.com/your-username/voyageai.git
 cd voyageai
+```
+
+### 2️⃣ Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
+
+### 3️⃣ Run Server
+
+```bash
 uvicorn app.main:app --reload
-📂 Project Structure
+```
 
-See /app directory for:
+---
 
-Agents
+## 🧪 Example Request
 
-Negotiation engine
+```
+Plan a 5-day Goa trip from Mumbai under ₹30,000 in March.
+```
 
-Optimization module
+System will:
 
-RAG pipeline
+* Extract constraints
+* Query agents
+* Optimize budget
+* Run negotiation loop
+* Retrieve local travel knowledge
+* Generate structured day-wise itinerary
 
-🎯 Roadmap
+---
 
- Agent communication layer
+## 🎯 Why This Project Matters
 
- Budget optimizer integration
+This project demonstrates:
 
- RAG knowledge base
+* Advanced multi-agent system design
+* AI orchestration
+* Optimization modeling
+* Retrieval-based LLM grounding
+* Production-level backend architecture
+* Fault tolerance and scalability thinking
 
- Async negotiation engine
+It is suitable for:
 
- Docker deployment
+* AI/ML Engineer roles
+* Applied LLM Engineer roles
+* Backend Engineer roles
+* System Design interviews
+* Hackathons and research prototypes
 
- AWS deployment
+---
 
-👨‍💻 Author
+## 🛣️ Roadmap
+
+* [ ] Agent framework implementation
+* [ ] Negotiation engine
+* [ ] Budget LP model integration
+* [ ] RAG knowledge base ingestion
+* [ ] Async message broker integration
+* [ ] Observability & logging
+* [ ] Dockerized deployment
+* [ ] AWS production deployment
+
+---
+
+## 👨‍💻 Author
 
 Sarthak Patil
-
-AI/ML Engineer 
+Computer Engineer 
