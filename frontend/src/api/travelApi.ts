@@ -16,3 +16,18 @@ export async function planTrip(data: TravelRequest) {
 
   return response.json();
 }
+export async function optimizeOnly(data: TravelRequest) {
+  const response = await fetch(`${API_URL}/optimize-only`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error("Optimization failed");
+  }
+
+  return response.json();
+}

@@ -3,26 +3,24 @@ from app.protocol.message_schema import create_message
 from app.agents.flight_agent import FlightAgent
 from app.agents.hotel_agent import HotelAgent
 from app.agents.weather_agent import WeatherAgent
-from app.agents.budget_agent import BudgetAgent
 from app.agents.itinerary_agent import ItineraryAgent
 from app.optimization.budget_optimizer import BudgetOptimizer
+
 
 class Planner:
     def __init__(self):
         self.flight_agent = FlightAgent()
         self.hotel_agent = HotelAgent()
         self.weather_agent = WeatherAgent()
-        self.budget_agent = BudgetAgent()
         self.itinerary_agent = ItineraryAgent()
         self.optimizer = BudgetOptimizer()
 
     async def plan_trip(self, request):
-        # Calculate nights
         start = datetime.strptime(request.start_date, "%Y-%m-%d")
         end = datetime.strptime(request.end_date, "%Y-%m-%d")
         nights = (end - start).days
 
-        # --- Flight Agent ---
+        # Flight
         flight_msg = create_message(
             sender="planner",
             receiver="flight_agent",
@@ -31,7 +29,7 @@ class Planner:
         )
         flight_response = await self.flight_agent.receive(flight_msg)
 
-        # --- Hotel Agent ---
+        # Hotel
         hotel_msg = create_message(
             sender="planner",
             receiver="hotel_agent",
@@ -40,7 +38,7 @@ class Planner:
         )
         hotel_response = await self.hotel_agent.receive(hotel_msg)
 
-        # --- Weather Agent ---
+        # Weather
         weather_msg = create_message(
             sender="planner",
             receiver="weather_agent",
@@ -49,17 +47,21 @@ class Planner:
         )
         weather_response = await self.weather_agent.receive(weather_msg)
 
-        # --- Initial Cost Calculation ---
         flight_cost = flight_response.payload["flight_cost"]
         hotel_cost = hotel_response.payload["hotel_cost"]
 
-        max_attempts = 4
-        attempt = 0
+        flight_quality = flight_response.payload["flight_quality"]
+        hotel_quality = hotel_response.payload["hotel_quality"]
 
+        # Optimization
         optimized = self.optimizer.optimize(
             flight_cost=flight_cost,
             hotel_cost=hotel_cost,
+            flight_quality=flight_quality,
+            hotel_quality=hotel_quality,
             user_budget=request.budget,
+            alpha=request.alpha or 1.0,
+            beta=request.beta or 2000.0,
         )
 
         if optimized:
@@ -71,11 +73,16 @@ class Planner:
             final_total = flight_cost + hotel_cost
             status = "OVER_BUDGET"
 
-        # Final status
-        final_total = flight_cost + hotel_cost
-        status = "WITHIN_BUDGET" if final_total <= request.budget else "OVER_BUDGET"
+        # Sensitivity Analysis
+        sensitivity = self.optimizer.sensitivity_analysis(
+            flight_cost=flight_cost,
+            hotel_cost=hotel_cost,
+            flight_quality=flight_quality,
+            hotel_quality=hotel_quality,
+            user_budget=request.budget,
+        )
 
-        # --- Itinerary Agent ---
+        # Itinerary
         itinerary_msg = create_message(
             sender="planner",
             receiver="itinerary_agent",
@@ -94,4 +101,5 @@ class Planner:
             "flight_cost": flight_cost,
             "hotel_cost": hotel_cost,
             "itinerary": itinerary_response.payload["itinerary"],
+            "sensitivity_analysis": sensitivity,
         }

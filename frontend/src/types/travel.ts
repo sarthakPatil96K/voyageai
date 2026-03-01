@@ -5,6 +5,15 @@ export interface TravelRequest {
   end_date: string;
   budget: number;
   preferences?: string;
+  alpha?: number;
+  beta?: number;
+}
+export interface SensitivityPoint {
+  budget: number;
+  flight_cost?: number;
+  hotel_cost?: number;
+  total_cost?: number;
+  status?: string;
 }
 
 export interface TravelResponse {
@@ -14,4 +23,5 @@ export interface TravelResponse {
   flight_cost: number;
   hotel_cost: number;
   itinerary: string;
+  sensitivity_analysis: SensitivityPoint[];
 }

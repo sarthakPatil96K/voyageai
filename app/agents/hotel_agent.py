@@ -16,6 +16,7 @@ class HotelAgent(BaseAgent):
 
         cost_per_night = random.randint(2000, 6000)
         total_cost = cost_per_night * nights
+        quality_score = random.uniform(3.0, 5.0)
 
         if max_budget is not None:
             total_cost = min(total_cost, max_budget)
@@ -26,6 +27,7 @@ class HotelAgent(BaseAgent):
             intent="RESPONSE",
             payload={
                 "hotel_cost": total_cost,
+                "hotel_quality": quality_score,
                 "hotel_name": "MockStay Hotel",
             },
         )

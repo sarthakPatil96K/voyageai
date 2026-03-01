@@ -15,6 +15,7 @@ class FlightAgent(BaseAgent):
             max_budget = message.constraints.get("max_flight_cost")
 
         base_price = random.randint(5000, 15000)
+        quality_score = random.uniform(3.0, 5.0)
 
         if max_budget is not None:
             base_price = min(base_price, max_budget)
@@ -26,6 +27,7 @@ class FlightAgent(BaseAgent):
             payload={
                 "destination": destination,
                 "flight_cost": base_price,
+                "flight_quality": quality_score,
                 "airline": "MockAir",
             },
         )

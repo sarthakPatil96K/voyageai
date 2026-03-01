@@ -1,6 +1,8 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Dict, Any
 
+alpha: float | None = 1.0
+beta: float | None = 2000.0
 
 class TravelRequest(BaseModel):
     source: str
@@ -8,7 +10,9 @@ class TravelRequest(BaseModel):
     start_date: str
     end_date: str
     budget: float
-    preferences: Optional[str] = None
+    preferences: str | None = None
+    alpha: float | None = 1.0
+    beta: float | None = 2000.0
 
 
 class TravelResponse(BaseModel):
@@ -18,3 +22,4 @@ class TravelResponse(BaseModel):
     flight_cost: float
     hotel_cost: float
     itinerary: str
+    sensitivity_analysis: List[Dict[str, Any]]

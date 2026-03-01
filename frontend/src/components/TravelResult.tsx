@@ -1,4 +1,5 @@
 import type { TravelResponse } from "../types/travel";
+import SensitivityChart from "./SensitivityChart";
 
 interface Props {
   result: TravelResponse;
@@ -19,6 +20,9 @@ export default function TravelResult({ result }: Props) {
       <div className="mt-4 whitespace-pre-line">
         {result.itinerary}
       </div>
+
+      {/* Sensitivity Graph */}
+      <SensitivityChart data={result.sensitivity_analysis} />
     </div>
   );
 }
