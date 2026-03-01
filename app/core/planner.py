@@ -5,7 +5,7 @@ from app.agents.hotel_agent import HotelAgent
 from app.agents.weather_agent import WeatherAgent
 from app.agents.budget_agent import BudgetAgent
 from app.agents.itinerary_agent import ItineraryAgent
-
+from app.optimization.budget_optimizer import BudgetOptimizer
 
 class Planner:
     def __init__(self):
@@ -14,6 +14,7 @@ class Planner:
         self.weather_agent = WeatherAgent()
         self.budget_agent = BudgetAgent()
         self.itinerary_agent = ItineraryAgent()
+        self.optimizer = BudgetOptimizer()
 
     async def plan_trip(self, request):
         # Calculate nights
@@ -55,44 +56,20 @@ class Planner:
         max_attempts = 4
         attempt = 0
 
-        while attempt < max_attempts:
-            total_cost = flight_cost + hotel_cost
+        optimized = self.optimizer.optimize(
+            flight_cost=flight_cost,
+            hotel_cost=hotel_cost,
+            user_budget=request.budget,
+        )
 
-            if total_cost <= request.budget:
-                break
-
-            # Determine highest contributor
-            if hotel_cost >= flight_cost:
-                # Ask hotel agent to reduce cost
-                reduction_target = request.budget - flight_cost
-
-                hotel_msg = create_message(
-                    sender="planner",
-                    receiver="hotel_agent",
-                    intent="NEGOTIATE",
-                    payload={"nights": nights},
-                    constraints={"max_hotel_cost": reduction_target},
-                )
-
-                hotel_response = await self.hotel_agent.receive(hotel_msg)
-                hotel_cost = hotel_response.payload["hotel_cost"]
-
-            else:
-                # Ask flight agent to reduce cost
-                reduction_target = request.budget - hotel_cost
-
-                flight_msg = create_message(
-                    sender="planner",
-                    receiver="flight_agent",
-                    intent="NEGOTIATE",
-                    payload={"destination": request.destination},
-                    constraints={"max_flight_cost": reduction_target},
-                )
-
-                flight_response = await self.flight_agent.receive(flight_msg)
-                flight_cost = flight_response.payload["flight_cost"]
-
-            attempt += 1
+        if optimized:
+            flight_cost = optimized["flight_cost"]
+            hotel_cost = optimized["hotel_cost"]
+            final_total = optimized["total_cost"]
+            status = "WITHIN_BUDGET"
+        else:
+            final_total = flight_cost + hotel_cost
+            status = "OVER_BUDGET"
 
         # Final status
         final_total = flight_cost + hotel_cost
