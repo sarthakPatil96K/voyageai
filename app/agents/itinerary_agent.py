@@ -1,27 +1,29 @@
 from app.agents.base_agent import BaseAgent
 from app.protocol.message_schema import create_message, AgentMessage
+from app.rag.itinerary_rag import ItineraryRAG
 
 
 class ItineraryAgent(BaseAgent):
     def __init__(self):
         super().__init__(name="itinerary_agent")
+        self.rag = ItineraryRAG()
 
     async def handle(self, message: AgentMessage) -> AgentMessage:
-        destination = message.payload.get("destination")
-        forecast = message.payload.get("forecast")
+        data = message.payload  # ✅ Proper extraction
 
-        plan = f"""
-Day 1: Explore main attractions in {destination}
-Day 2: Enjoy local cuisine
-Day 3: Relax and shopping
-Weather Forecast: {forecast}
-"""
+        itinerary = self.rag.generate_itinerary(
+            destination=data.get("destination"),
+            forecast=data.get("forecast"),
+            start_date=data.get("start_date"),
+            end_date=data.get("end_date"),
+            total_days=data.get("total_days"),
+            budget_status=data.get("budget_status"),
+            allocated_budget=data.get("allocated_budget"),
+        )
 
         return create_message(
             sender=self.name,
             receiver=message.sender,
             intent="RESPONSE",
-            payload={
-                "itinerary": plan.strip(),
-            },
+            payload={"itinerary": itinerary},
         )
